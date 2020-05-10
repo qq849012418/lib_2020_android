@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.klinkerapps:searchview:2.2.5@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/c2502f2262892d6745b82e681a9fab7c/searchview-2.2.5/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/c2502f2262892d6745b82e681a9fab7c/searchview-2.2.5/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.klinkerapps/searchview/2.2.5/7e45a65143a97aaed3573cb16b521e45b11a8f4c/searchview-2.2.5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.klinkerapps/searchview/2.2.5/cef5b4a2a2e9e3ff49bde9ec86b158953d813646/searchview-2.2.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.moxun:tagcloudlib:1.1.3@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/e23d41755d891bb3bdc658567a271d71/tagcloudlib-1.1.3/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/e23d41755d891bb3bdc658567a271d71/tagcloudlib-1.1.3/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.moxun/tagcloudlib/1.1.3/848e934008aac5203df49eb3354f6eaf5a15d0c9/tagcloudlib-1.1.3-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.moxun/tagcloudlib/1.1.3/fe2330353aacea5d221cef687be8ae51d41695a5/tagcloudlib-1.1.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

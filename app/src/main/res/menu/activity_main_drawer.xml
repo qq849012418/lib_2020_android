@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/myborrow"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="我的借阅" />
+        <item
+            android:id="@+id/mycollection"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="我的收藏" />
+        <item
+            android:id="@+id/borrowrank"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="借阅排名" />
+        <item
+            android:id="@+id/history"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="历史记录" />
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/log_in"
+                android:icon="@drawable/ic_menu_share"
+                android:title="登陆" />
+            <item
+                android:id="@+id/log_out"
+                android:icon="@drawable/ic_menu_send"
+                android:title="退出" />
+        </menu>
+    </item>
+
+</menu>
