@@ -22,11 +22,39 @@
         android:layout_margin="10dp"
         android:scaleType="fitXY"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/textView2" />
+        <LinearLayout
+            android:id="@+id/contentofbookitem"
+            android:layout_width="match_parent"
+            android:layout_height="138dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="书名"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="14sp"
+                android:text="描述"
+                android:textColor="#7C222222" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignBottom="@id/contentofbookitem"
+                android:clickable="true"
+                android:gravity="bottom"
+                android:text="当前状态："
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
 
     </LinearLayout>
 </android.support.v7.widget.CardView>

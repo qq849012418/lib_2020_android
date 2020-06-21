@@ -1,5 +1,6 @@
 package com.example.steven.sjtu_lib_v2.activity;
 
+import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -122,6 +124,7 @@ public class SearchActivity extends AppCompatActivity
             @Override
             public void onMenuClick() {
                 drawerLayout.openDrawer(GravityCompat.START);
+                getPeoples();
             }
         });
         OkHttpUtils.get()
@@ -161,6 +164,12 @@ public class SearchActivity extends AppCompatActivity
                         tagCloud.setAdapter(textTagsAdapter);
                     }
                 });
+        //防止主线程网络请求报错
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+
     }
 
     @Override
@@ -280,6 +289,8 @@ public class SearchActivity extends AppCompatActivity
             } catch (SnappydbException e) {
                 e.printStackTrace();
             }
+        }else if (id == R.id.people_inside) {
+            getPeoples();
         }
         return true;
     }
@@ -319,6 +330,23 @@ public class SearchActivity extends AppCompatActivity
         });
         super.onStart();
         searchView.setAdapter(mSearchAdapter);
+    }
+
+    public void getPeoples(){
+        try {
+            Document document = Jsoup.connect("http://zgrstj.lib.sjtu.edu.cn/cp?callback=CountPerson").get();
+            String text = document.text();
+            String people = text.substring(text.lastIndexOf("\"图书馆主馆\",\"inCounter\":")+20,text.indexOf(",\"max\""));
+            String maxpeople = text.substring(text.indexOf(",\"max\"")+7,text.indexOf("},{\"areaName\""));
+            System.out.println(maxpeople);
+            if(maxpeople.equals("0")){
+                //maxpeople.concat(" （可能已经闭馆）");
+                Toast.makeText(getApplicationContext(), "图书馆主馆"+people+"/"+maxpeople+"（可能已经闭馆）", Toast.LENGTH_SHORT).show();
+            }else
+                Toast.makeText(getApplicationContext(), "图书馆主馆"+people+"/"+maxpeople, Toast.LENGTH_SHORT).show();
+        }catch (IOException E) {
+
+        }
     }
 
 }
