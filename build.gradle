@@ -2,6 +2,13 @@
 
 buildscript {
     repositories {
+        maven {
+            url "http://maven.aliyun.com/nexus/content/repositories/releases/"
+        }
+
+        maven {
+            url "http://maven.aliyun.com/nexus/content/repositories/snapshots"
+        }
         google()
         jcenter()
 //        maven {
@@ -22,10 +29,18 @@ buildscript {
 
 allprojects {
     repositories {
+        maven {
+            url "http://maven.aliyun.com/nexus/content/repositories/releases/"
+        }
+
+        maven {
+            url "http://maven.aliyun.com/nexus/content/repositories/snapshots"
+        }
         google()
         jcenter()
         maven { url "https://dl.google.com/dl/android/maven2/" }
         maven{ url "https://jitpack.io"}
+
 //        maven {
 //            url 'https://maven.google.com/'
 //            name 'Google'

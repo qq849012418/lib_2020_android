@@ -1,86 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TableRow
-            android:background="#93ca4b"
             android:id="@+id/shadow1"
             android:layout_width="match_parent"
-            android:paddingBottom="1dp"
-            android:paddingRight="1dp">
-            <TextView
-                android:layout_marginLeft="1dp"
-                android:textColor="@color/white"
-                android:padding="5dp"
-                android:text="位置"/>
-            <TextView
-                android:textColor="@color/white"
-                android:layout_marginLeft="1dp"
-                android:padding="5dp"
-                android:id="@+id/location_table"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </TableRow>
-
-        <TableRow
-            android:background="#6f9c33"
-            android:id="@+id/deep1"
-            android:paddingBottom="1dp"
-            android:paddingRight="1dp">
-            <TextView
-                android:textColor="@color/white"
-                android:layout_marginLeft="1dp"
-                android:padding="5dp"
-                android:text="索书号"/>
-            <TextView
-                android:textColor="@color/white"
-                android:layout_marginLeft="1dp"
-                android:id="@+id/subscring_table"
-                android:padding="5dp"
-                android:gravity="center"/>
-        </TableRow>
-
-        <TableRow
             android:background="#93ca4b"
-            android:id="@+id/shadow2"
-            android:paddingBottom="1dp"
-            android:paddingRight="1dp">
-            <TextView
-                android:layout_marginLeft="1dp"
-                android:textColor="@color/white"
-                android:padding="5dp"
-                android:text="单册状态"/>
+            android:paddingRight="1dp"
+            android:paddingBottom="1dp">
+
             <TextView
                 android:layout_marginLeft="1dp"
                 android:padding="5dp"
-                android:textColor="@color/white"
-                android:id="@+id/single_status_table"
-                android:gravity="center"/>
+                android:text="位置"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/location_table"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:layout_weight="1"
+                android:padding="5dp"
+                android:textColor="@color/white" />
         </TableRow>
 
         <TableRow
+            android:id="@+id/deep1"
             android:background="#6f9c33"
+            android:paddingRight="1dp"
+            android:paddingBottom="1dp">
+
+            <TextView
+                android:layout_marginLeft="1dp"
+                android:padding="5dp"
+                android:text="索书号"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/subscring_table"
+                android:layout_marginLeft="1dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:textColor="@color/white" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/shadow2"
+            android:background="#93ca4b"
+            android:paddingRight="1dp"
+            android:paddingBottom="1dp">
+
+            <TextView
+                android:layout_marginLeft="1dp"
+                android:padding="5dp"
+                android:text="单册状态"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/single_status_table"
+                android:layout_marginLeft="1dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:textColor="@color/white" />
+        </TableRow>
+
+        <TableRow
             android:id="@+id/deep2"
-            android:paddingBottom="1dp"
-            android:paddingRight="1dp">
+            android:background="#6f9c33"
+            android:paddingRight="1dp"
+            android:paddingBottom="1dp">
+
             <TextView
                 android:layout_marginLeft="1dp"
                 android:padding="5dp"
-                android:textColor="@color/white"
-                android:text="应还日期"/>
+                android:text="应还日期"
+                android:textColor="@color/white" />
+
             <TextView
-                android:layout_marginLeft="1dp"
-                android:padding="5dp"
                 android:id="@+id/return_date_table"
-                android:textColor="@color/white"
-                android:gravity="center"/>
+                android:layout_marginLeft="1dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:textColor="@color/white" />
         </TableRow>
 
     </TableLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/addtocart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="加入借阅篮👜" />
+
+        <Button
+            android:id="@+id/borrowbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="立即借阅🚀" />
+    </LinearLayout>
+
 </LinearLayout>

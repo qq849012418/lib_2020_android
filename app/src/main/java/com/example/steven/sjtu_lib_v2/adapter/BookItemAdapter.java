@@ -48,7 +48,7 @@ public class BookItemAdapter extends ArrayAdapter<Element> {
         tv.setText(book_name);
         tv2.setText(book_detail);
         tv3.setText(avaliable);
-        if(avaliable.contains("在架")){
+        if(avaliable.contains("在架")){//本句好像没有用？
 
             tv3.setTextColor(Color.GREEN);
             tv3.append("(查看位置)");
