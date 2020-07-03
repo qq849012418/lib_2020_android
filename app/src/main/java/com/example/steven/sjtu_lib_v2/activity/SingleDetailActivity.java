@@ -9,6 +9,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -17,6 +20,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -25,8 +29,23 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.TypeReference;
+import com.aliyun.alink.dm.model.RequestModel;
+import com.aliyun.alink.linkkit.api.LinkKit;
+import com.aliyun.alink.linksdk.cmp.connect.channel.MqttPublishRequest;
+import com.aliyun.alink.linksdk.cmp.core.base.AMessage;
+import com.aliyun.alink.linksdk.cmp.core.base.ARequest;
+import com.aliyun.alink.linksdk.cmp.core.base.AResponse;
+import com.aliyun.alink.linksdk.cmp.core.base.ConnectState;
+import com.aliyun.alink.linksdk.cmp.core.listener.IConnectNotifyListener;
+import com.aliyun.alink.linksdk.cmp.core.listener.IConnectSendListener;
+import com.aliyun.alink.linksdk.tmp.device.payload.ValueWrapper;
+import com.aliyun.alink.linksdk.tmp.listener.IPublishResourceListener;
+import com.aliyun.alink.linksdk.tools.AError;
+import com.aliyun.alink.linksdk.tools.ALog;
 import com.example.steven.sjtu_lib_v2.R;
 import com.example.steven.sjtu_lib_v2.adapter.TableAdapter;
+import com.example.steven.sjtu_lib_v2.devicesdk.demo.LightExampleActivity;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.BitmapCallback;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -40,9 +59,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -89,7 +111,8 @@ public class SingleDetailActivity extends AppCompatActivity {
     String authorInfo;
     String url = null;
     public static String base_url = "http://ourex.lib.sjtu.edu.cn/primo_library/libweb/action/";
-
+    public final static int REPORT_MSG = 0x100;
+    public static InternalHandler mHandler = new InternalHandler();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +121,7 @@ public class SingleDetailActivity extends AppCompatActivity {
 
         adapter = new TableAdapter(getApplicationContext(), 0, table_data);
         lv_table.setAdapter(adapter);
+        setDownStreamListener();
 
         final String detail_html = get_html_from_intent();
         url = get_url_from_intent();
@@ -408,4 +432,138 @@ public class SingleDetailActivity extends AppCompatActivity {
 
     }
 
+    public static class InternalHandler extends Handler {
+        public InternalHandler() {
+            super(Looper.getMainLooper());
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg == null) {
+                return;
+            }
+            int what = msg.what;
+            switch (what) {
+                case REPORT_MSG:
+                    reportBookInfo(msg.getData());
+                    //mHandler.sendEmptyMessageDelayed(REPORT_MSG, 5*1000);
+                    break;
+            }
+
+        }
+    }
+    /**
+     * 数据上行
+     * 上报该本图书信息
+     */
+    public static void reportBookInfo(Bundle bundle) {
+        String path = bundle.getString("location");
+        String code = bundle.getString("bookid");
+        char[] srChar=path.toCharArray();
+        char locHead='Z';
+        char numHead='9';
+        char idHead=code.charAt(0);
+        int year=Integer.parseInt(code.substring(code.length() - 2));
+        if(path.contains("主馆临时")){
+            if(year>=19){
+                path="C300";
+            }else {
+                path=path.substring(path.indexOf(idHead)+3,path.indexOf(idHead)+7);
+            }
+        }else if(path.contains("主馆图书")){
+            for (char c : srChar) {
+                if ((char)c>='A'&&(char)c<='Z') {
+                    locHead=c;
+                    break;
+                }
+            }
+            for (char c : srChar) {
+                if ((char)c>='1' && (char)c<='9') {
+                    numHead=c;
+                    break;
+                }
+            }
+            path=locHead+numHead+"00";
+        }else path="warning!"+path;
+        Log.v("msg","上报 Hello, World！");
+        try {
+            Map<String, ValueWrapper> reportData = new HashMap<>();
+            //reportData.put("Status", new ValueWrapper.BooleanValueWrapper(1)); // 1开 0 关
+            //reportData.put("Data", new ValueWrapper.StringValueWrapper("Hello, World!")); //
+            String tasklist="";
+            String name = "test";
+//            String path = "C300";
+//            String code = "I313.45/24-3 2019";
+            tasklist+="{\"bookname\":\""+name+"\"," +
+                        "\"path\":\""+path+"\"," +
+                        "\"code\":\""+code+"\"}\n";
+
+            reportData.put("data",new ValueWrapper.StringValueWrapper(tasklist));
+            reportData.put("Uab",new ValueWrapper.IntValueWrapper(1234));
+            LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
+                @Override
+                public void onSuccess(String s, Object o) {
+                    Log.v("msg","onSuccess() called with: s = [" + s + "], o = [" + o + "]");
+                    //Toast.makeText(getClass(), "设备上报状态成功", Toast.LENGTH_SHORT).show();
+
+                    //showToast("设备上报状态成功");
+                    Log.v("msg","上报成功。");
+                }
+
+                @Override
+                public void onError(String s, AError aError) {
+                    Log.v("msg","onError() called with: s = [" + s + "], aError = [" + aError + "]");
+                    //showToast("设备上报状态失败");
+                    Log.v("msg","上报失败。");
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void setDownStreamListener(){
+        LinkKit.getInstance().registerOnPushListener(notifyListener);
+    }
+
+    private IConnectNotifyListener notifyListener = new IConnectNotifyListener() {
+        @Override
+        public void onNotify(String s, String s1, AMessage aMessage) {
+            try {
+//                if (s1 != null && s1.contains("service/property/set")) {
+                if (s1 != null && s1.contains("service/property/set")) {
+                    String result = new String((byte[]) aMessage.data, "UTF-8");
+                    RequestModel<String> receiveObj = com.alibaba.fastjson.JSONObject.parseObject(result, new TypeReference<RequestModel<String>>() {
+                    }.getType());
+                    Log.v("msg","Received raw: "+result);
+                    Log.v("msg","Received a message: " + (receiveObj==null?"":receiveObj.params));
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public boolean shouldHandle(String s, String s1) {
+            Log.v("msg", "shouldHandle() called with: s = [" + s + "], s1 = [" + s1 + "]");
+            return true;
+        }
+
+        @Override
+        public void onConnectStateChange(String s, ConnectState connectState) {
+            Log.v("msg","onConnectStateChange() called with: s = [" + s + "], connectState = [" + connectState + "]");
+        }
+    };
+    public void showToast(final String message){
+        ALog.d("msg", "showToast() called with: message = [" + message + "]");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getBaseContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

@@ -210,7 +210,7 @@ public class LightExampleActivity extends BaseActivity {
             switch (what) {
                 case REPORT_MSG:
                     reportHelloWorld();
-                    mHandler.sendEmptyMessageDelayed(REPORT_MSG, 5*1000);
+                    //mHandler.sendEmptyMessageDelayed(REPORT_MSG, 5*1000);
                     break;
             }
 
