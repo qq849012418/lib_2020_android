@@ -82,12 +82,12 @@ public class SingleDetailActivity extends AppCompatActivity {
     ListView lv_table;
     @Bind(R.id.tv_book_author)
     TextView tvBookAuthor;
-    @Bind(R.id.tv_book_time)
-    TextView tvBookTime;
+    //@Bind(R.id.tv_book_time)
+    static TextView tvBookTime;
     @Bind(R.id.tv_book_page)
     TextView tvBookPage;
-    @Bind(R.id.tv_book_publicer)
-    TextView tvBookPublicer;
+    //@Bind(R.id.tv_book_publicer)
+    static TextView tvBookPublicer;
     @Bind(R.id.tv_book_isbn)
     TextView tvBookIsbn;
     @Bind(R.id.tv_book_price)
@@ -103,7 +103,8 @@ public class SingleDetailActivity extends AppCompatActivity {
     @Bind(R.id.bookinfo)
     TextView tvBookInfo;
 
-    TextView titleTextView = null;
+    static TextView titleTextView = null;
+    private static String REGEX_CHINESE = "[\u4e00-\u9fa5]";// 中文正则
 
     TableAdapter adapter;
     List<Element> table_data = new ArrayList<Element>();
@@ -111,13 +112,18 @@ public class SingleDetailActivity extends AppCompatActivity {
     String authorInfo;
     String url = null;
     public static String base_url = "http://ourex.lib.sjtu.edu.cn/primo_library/libweb/action/";
+
     public final static int REPORT_MSG = 0x100;
     public static InternalHandler mHandler = new InternalHandler();
+    static boolean isdoubanok = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.single_drawer);
         ButterKnife.bind(this);
+        tvBookTime = (TextView)findViewById(R.id.tv_book_time) ;
+        tvBookPublicer = (TextView)findViewById(R.id.tv_book_publicer) ;
+
 
         adapter = new TableAdapter(getApplicationContext(), 0, table_data);
         lv_table.setAdapter(adapter);
@@ -213,6 +219,7 @@ public class SingleDetailActivity extends AppCompatActivity {
                             tvBookIsbn.setText(matcher.group(0));
                             getDoubanInfo(matcher.group(0));
                         } else {
+                            isdoubanok=false;
                             Toast.makeText(getApplicationContext(), "未能找到isbn，无法加载豆瓣数据", Toast.LENGTH_SHORT).show();
                         }
 
@@ -276,11 +283,13 @@ public class SingleDetailActivity extends AppCompatActivity {
                                 .execute(new StringCallback() {
                                     @Override
                                     public void onError(Call call, Exception e) {
+                                        isdoubanok=false;
                                         Toast.makeText(getApplicationContext(), "加载豆瓣数据失败", Toast.LENGTH_SHORT).show();
                                     }
 
                                     @Override
                                     public void onResponse(String response) {
+                                        isdoubanok=true;
                                         Toast.makeText(getApplicationContext(), "加载豆瓣数据成功0", Toast.LENGTH_SHORT).show();
                                         try {
                                             JSONObject jsonobect = new JSONObject(response);
@@ -463,9 +472,15 @@ public class SingleDetailActivity extends AppCompatActivity {
         char locHead='Z';
         char numHead='9';
         char idHead=code.charAt(0);
-        int year=Integer.parseInt(code.substring(code.length() - 2));
+        int year;
+        if(isdoubanok&&!tvBookTime.getText().toString().isEmpty()){
+            year = Integer.parseInt(tvBookTime.getText().toString().substring(0,4));
+        }else{
+            year = Integer.parseInt(tvBookPublicer.getText().toString().substring(tvBookPublicer.getText().toString().length()-4));
+        }
+        //year=Integer.parseInt(code.substring(code.length() - 2));//对于时间的获取，需要通过解析出版社最后四位或出版时间前4位
         if(path.contains("主馆临时")){
-            if(year>=19){
+            if(year>=2019){
                 path="C300";
             }else {
                 path=path.substring(path.indexOf(idHead)+3,path.indexOf(idHead)+7);
@@ -483,7 +498,10 @@ public class SingleDetailActivity extends AppCompatActivity {
                     break;
                 }
             }
-            path=locHead+numHead+"00";
+            Pattern pat = Pattern.compile(REGEX_CHINESE);
+            Matcher mat = pat.matcher(path);
+            String nocnwords = mat.replaceAll("").replace(" ", "");
+            path=nocnwords.substring(0,2)+"00";
         }else path="warning!"+path;
         Log.v("msg","上报 Hello, World！");
         try {
@@ -491,7 +509,7 @@ public class SingleDetailActivity extends AppCompatActivity {
             //reportData.put("Status", new ValueWrapper.BooleanValueWrapper(1)); // 1开 0 关
             //reportData.put("Data", new ValueWrapper.StringValueWrapper("Hello, World!")); //
             String tasklist="";
-            String name = "test";
+            String name = titleTextView.getText().toString();
 //            String path = "C300";
 //            String code = "I313.45/24-3 2019";
             tasklist+="{\"bookname\":\""+name+"\"," +

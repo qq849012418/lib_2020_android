@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.example.steven.sjtu_lib_v2.R;
 import com.example.steven.sjtu_lib_v2.activity.SingleDetailActivity;
+import com.example.steven.sjtu_lib_v2.activity.SingleDetailActivity.InternalHandler;
 
 import org.jsoup.nodes.Element;
 
@@ -31,10 +32,11 @@ public class TableAdapter extends ArrayAdapter<Element> {
     TextView subscribing_table;
     TextView single_status_table;
     TextView return_data_table;
+    InternalHandler mmHandler = new InternalHandler();
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Element element=getItem(position);
-
         if (convertView==null){
             convertView= LayoutInflater.from(getContext()).inflate(R.layout.detail_table,null);
         }
