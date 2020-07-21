@@ -14,6 +14,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.BounceInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -226,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+//20200721Keenster 增加了关闭动画；优化了滑动体验
     private void plistview_init() {
         SwipeMenuCreator creator = new SwipeMenuCreator() {
             @Override
@@ -253,6 +254,21 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+        plistview.setOnSwipeListener(new SwipeMenuListView.OnSwipeListener() {
+
+            @Override
+            public void onSwipeStart(int position) {
+                // swipe start
+                plistview.smoothOpenMenu(position);
+            }
+
+            @Override
+            public void onSwipeEnd(int position) {
+                // swipe end
+
+            }
+        });
+
     }
 
     private void show_detail_info(int position) {
@@ -308,6 +324,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onError(Call call, Exception e) {
                         Toast.makeText(getApplicationContext(), "fail to connect", Toast.LENGTH_SHORT).show();
+                        //TODO:在这里加入断网后的默认显示界面
                         superSwipeRefreshLayout.setLoadMore(false);
                         if (dialog != null) {
                             dialog.dismiss();

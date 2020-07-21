@@ -90,12 +90,15 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             OkHttpUtils.get()
-                .url("http://electsys.sjtu.edu.cn/edu/login.aspx")
-                .build()
+                .url("http://electsys.sjtu.edu.cn/edu/login.aspx")//原为http
+                    .addHeader("Content-Type","application/x-www-form-urlencoded;charset=UTF-8" )
+                    .build()
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e) {
+
                         result=Boolean.FALSE;
+                        System.out.println("call fail");
                     }
 
                     @Override
@@ -106,10 +109,12 @@ public class LoginActivity extends AppCompatActivity {
                         final String sid = doc.getElementsByAttributeValueMatching("name", "sid").first().attr("value").toString();
                         final String returl = doc.getElementsByAttributeValueMatching("name", "returl").first().attr("value").toString();
                         final String se = doc.getElementsByAttributeValueMatching("name", "se").first().attr("value").toString();
-                            final String v = doc.getElementsByAttributeValueMatching("name", "v").first().attr("value").toString();
+                            //final String v = doc.getElementsByAttributeValueMatching("name", "v").first().attr("value").toString();
+
                             OkHttpUtils.get()
                                     .url("https://jaccount.sjtu.edu.cn/jaccount/captcha")
                                     .addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.65 Safari/537.36")
+                                    //.addHeader("Content-Type","application/x-www-form-urlencoded;charset=UTF-8" )
                                     .build()
                                     .execute(new BitmapCallback() {
                                         @Override
@@ -129,12 +134,12 @@ public class LoginActivity extends AppCompatActivity {
                                             System.out.println(captcha_text);
 
                                             OkHttpUtils.post()
-                                                    .url("https://jaccount.sjtu.edu.cn/jaccount/ulogin")
+                                                    .url("https://jaccount.sjtu.edu.cn/jaccount/jalogin")//原为ulogin
                                                     .addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.65 Safari/537.36")
                                                     .addParams("sid", sid)
                                                     .addParams("returl", returl)
                                                     .addParams("se", se)
-                                                    .addParams("v", v)
+//                                                    .addParams("v", v)
                                                     .addParams("captcha", captcha_text)
                                                     .addParams("user",mEmailView.getText().toString())
                                                     .addParams("pass", mPasswordView.getText().toString())
