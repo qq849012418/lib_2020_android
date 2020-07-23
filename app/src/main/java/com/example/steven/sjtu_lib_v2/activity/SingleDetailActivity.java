@@ -277,8 +277,9 @@ public class SingleDetailActivity extends AppCompatActivity {
                     private void getDoubanInfo(String isbn) {
                         OkHttpUtils.get()
                                 //.url("https://api.douban.com/v2/book/isbn/" + isbn) //豆瓣凉了
-                                //.url("http://api.xiaomafeixiang.com/api/bookinfo?isbn="+isbn)
-                                .url("http://book.feelyou.top/isbn/"+isbn)
+                                //.url("http://api.xiaomafeixiang.com/api/bookinfo?isbn="+isbn) //书库太少
+                                //.url("http://book.feelyou.top/isbn/"+isbn) //zbq凉了
+                                .url("https://api.douban.com/v2/book/isbn/" + isbn+"?apikey=0df993c66c0c636e29ecbb5344252a4a") //随时可能凉
                                 .build()
                                 .execute(new StringCallback() {
                                     @Override
@@ -293,16 +294,16 @@ public class SingleDetailActivity extends AppCompatActivity {
                                         Toast.makeText(getApplicationContext(), "加载豆瓣数据成功0", Toast.LENGTH_SHORT).show();
                                         try {
                                             JSONObject jsonobect = new JSONObject(response);
-                                            tvBookPage.setText(jsonobect.getJSONObject("book_info").getString("页数"));
-                                            tvBookPrice.setText(jsonobect.getJSONObject("book_info").getString("定价"));
-                                            tvBookAuthor.setText(jsonobect.getJSONObject("book_info").getString("作者"));
-                                            tvBookPublicer.setText(jsonobect.getJSONObject("book_info").getString("出版社"));
-                                            tvBookTime.setText(jsonobect.getJSONObject("book_info").getString("出版年"));
-                                            tvBookScore.setText(jsonobect.getJSONObject("rating").getString("value"));
-                                            //tvBookPage.setText(jsonobect.getString("pages"));
-                                            tvBookInfo.setText(jsonobect.getString("book_intro"));
+                                            tvBookPage.setText(jsonobect.getString("pages"));
+                                            tvBookPrice.setText(jsonobect.getString("price"));
+                                            tvBookAuthor.setText(jsonobect.getString("author"));
+                                            tvBookPublicer.setText(jsonobect.getString("publisher"));
+                                            tvBookTime.setText(jsonobect.getString("pubdate"));
+                                            tvBookScore.setText(jsonobect.getJSONObject("rating").getString("average"));
+                                            tvBookPage.setText(jsonobect.getString("pages"));
+                                            tvBookInfo.setText(jsonobect.getString("summary"));
                                             authorInfo = jsonobect.getString("author_intro");
-                                            final String doubanlink=jsonobect.getString("url");
+                                            final String doubanlink=jsonobect.getString("alt");
                                             makeTextViewResizable(tvBookInfo, 3, "View More", true);
 
                                             ivBookIcon.setOnClickListener(new View.OnClickListener() {
@@ -313,7 +314,7 @@ public class SingleDetailActivity extends AppCompatActivity {
                                                 }
                                             });
 
-                                            String imageUrl = jsonobect.getString("cover_url");
+                                            String imageUrl = jsonobect.getString("image");
                                             OkHttpUtils.get()
                                                     .url(imageUrl)
                                                     .build()
@@ -329,13 +330,13 @@ public class SingleDetailActivity extends AppCompatActivity {
                                                         }
                                                     });
 
-                                            JSONArray jsonarray = jsonobect.getJSONArray("labels");
+                                            JSONArray jsonarray = jsonobect.getJSONArray("tags");
                                             List<String > tag=new ArrayList<String>();
                                             for (int i = 0; i < jsonarray.length(); i++) {
-//                                                JSONObject object = jsonarray.getJSONObject(i);
-//                                                tag.add(object.getString("title"));
-                                                //JSONObject object = jsonarray.getJSONObject(i);
-                                                tag.add(jsonarray.getString(i));
+                                                JSONObject object = jsonarray.getJSONObject(i);
+                                                tag.add(object.getString("title"));
+
+//                                                tag.add(jsonarray.getString(i));
                                             }
                                             tagCloudView.setTags(tag);
                                         } catch (JSONException e) {
