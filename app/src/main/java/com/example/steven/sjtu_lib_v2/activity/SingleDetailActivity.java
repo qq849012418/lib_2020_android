@@ -78,6 +78,17 @@ import okhttp3.Call;
  * Created by steven on 2016/2/11.
  */
 public class SingleDetailActivity extends AppCompatActivity {
+    private static Context c;
+    private static String taskstr;
+    public static void startRbWatcher(String str)
+    {
+        Intent intent=new Intent(c,RoboWatcherActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("task",str);
+        intent.putExtras(bundle);
+        c.startActivity(intent);
+    }
+
     @Bind(R.id.listview_table)
     ListView lv_table;
     @Bind(R.id.tv_book_author)
@@ -119,6 +130,7 @@ public class SingleDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        c=this;
         setContentView(R.layout.single_drawer);
         ButterKnife.bind(this);
         tvBookTime = (TextView)findViewById(R.id.tv_book_time) ;
@@ -516,7 +528,7 @@ public class SingleDetailActivity extends AppCompatActivity {
             tasklist+="{\"bookname\":\""+name+"\"," +
                         "\"path\":\""+path+"\"," +
                         "\"code\":\""+code+"\"}\n";
-
+            taskstr=tasklist;
             reportData.put("data",new ValueWrapper.StringValueWrapper(tasklist));
             reportData.put("Uab",new ValueWrapper.IntValueWrapper(1234));
             LinkKit.getInstance().getDeviceThing().thingPropertyPost(reportData, new IPublishResourceListener() {
@@ -524,9 +536,10 @@ public class SingleDetailActivity extends AppCompatActivity {
                 public void onSuccess(String s, Object o) {
                     Log.v("msg","onSuccess() called with: s = [" + s + "], o = [" + o + "]");
                     //Toast.makeText(getClass(), "设备上报状态成功", Toast.LENGTH_SHORT).show();
-
                     //showToast("设备上报状态成功");
                     Log.v("msg","上报成功。");
+
+                    startRbWatcher(taskstr);
                 }
 
                 @Override
