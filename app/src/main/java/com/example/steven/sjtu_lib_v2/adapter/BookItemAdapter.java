@@ -32,7 +32,7 @@ public class BookItemAdapter extends ArrayAdapter<Element> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Element complete_info=getItem(position);
-        //System.out.println("test"+complete_info.html());//for test
+        System.out.println("test"+complete_info.html());//for test
         String cover_image_url=get_cover_image_url(complete_info);
         String book_name=get_book_name(complete_info);
         String book_detail = get_Author(complete_info)+"\n"+get_Press(complete_info)+"\n"+get_Available(complete_info);

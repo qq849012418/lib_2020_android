@@ -155,14 +155,15 @@ public class MainActivity extends AppCompatActivity {
 
         Cursor cursor = db.rawQuery("select * from search_history", null);
         if (cursor.moveToFirst()) {
-            while (cursor.isAfterLast() == false) {
+//            while (cursor.isAfterLast() == false) {
                 String name = cursor.getString(cursor.getColumnIndex("name"));
                 list.add(new SearchItem(name));
                 cursor.moveToNext();
-            }
+//            }
         }
         mSuggestionList=new ArrayList<>();
-        mSuggestionList.addAll(list);
+        //mSuggestionList.addAll(list);
+        mSuggestionList.add(list.get(0));
         List<SearchItem> mReasultList=new ArrayList<>();
         SearchAdapter mSearchAdapter=new SearchAdapter(this,mReasultList,mSuggestionList,mTheme);
         mSearchAdapter.setOnItemClickListener(new SearchAdapter.OnItemClickListener() {
@@ -175,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
         });
         super.onStart();
         searchView.setAdapter(mSearchAdapter);
+
 //=======
 //        final Intent intent = new Intent(MainActivity.this, UpdateService.class);
 //        startService(intent);
