@@ -210,6 +210,8 @@ public class SingleDetailActivity extends AppCompatActivity {
 
     public String get_url_from_intent() {
         String url = getIntent().getExtras().getString("url");
+        //System.out.println("kkk"+url);
+        //url="http://ourex.lib.sjtu.edu.cn/primo_library/libweb/action/display.do;?ct=display&fn=search&doc=sjtulibzw000450308&indx=1&recIds=sjtulibzw000450308&recIdxs=0&elementId=0&renderMode=poppedOut&displayMode=full&frbrSourceidDisplay=sjtulibzw&vl(307677151UI1)=all_items&frbrIssnDisplay=&gathStatTab=true&dscnt=0&vl(1UIStartWith0)=contains&vl(10225382UI0)=any&callNumberBrowseField=browse_callnumber&frbrRecordsSource=Primo+Local&vid=chinese&tabRealType=browseshelf&mode=Basic&lastPag=&rfnGrp=frbr&frbrJtitleDisplay=&tab=default_tab&fromBrowseShelf=true&dstmp=1596461312628&frbg=373304344&lastPagIndx=1&frbrVersion=&frbrSrt=date&frbrEissnDisplay=&scp.scps=scope%3A%28SJT%29%2Cscope%3A%28sjtu_metadata%29%2Cscope%3A%28sjtu_sfx%29%2Cscope%3A%28sjtulibzw%29%2Cscope%3A%28sjtulibxw%29&tb=t&cs=frb&fctV=373304344&srt=rank&callNumber=o13%2Fd65+v.1+2009&fctN=facet_frbrgroupid&vl(freeText0)=%E9%AB%98%E7%AD%89%E6%95%B0%E5%AD%A6&dum=true&tabs=locationsTab&gathStatTab=true";
         return url;
     }
 
@@ -236,17 +238,21 @@ public class SingleDetailActivity extends AppCompatActivity {
                         }
 
                         Document doc = Jsoup.parse(response);
-                        Elements EXLLocationTableColumn1_eles = doc.getElementsByClass("EXLLocationTableColumn1");
+                        Elements EXLLocationTableColumn1_eles = doc.getElementsByClass("EXLLocationInfo");
                         if (!EXLLocationTableColumn1_eles.isEmpty()) {
                             for (Element i : EXLLocationTableColumn1_eles) {
                                 table_data.add(i.parent());
+                                System.out.println("kkk"+i.toString()+"--kkk");
                             }
                             adapter.notifyDataSetChanged();
                         } else {
                             List<String> link_list = new ArrayList<String>();
-                            Elements link_elm = doc.getElementsByClass("EXLLocationsIcon");
+                            Elements link_elm = doc.getElementsByClass("EXLLocationListContainer");
                             for (Element i : link_elm) {
-                                String temp_link = i.attr("href");
+                                Elements href = i.select("a");
+
+                                String temp_link = href.attr("href");
+
                                 temp_link = base_url + temp_link;
                                 link_list.add(temp_link);
                             }
@@ -565,11 +571,17 @@ public class SingleDetailActivity extends AppCompatActivity {
             try {
 //                if (s1 != null && s1.contains("service/property/set")) {
                 if (s1 != null && s1.contains("service/property/set")) {
-                    String result = new String((byte[]) aMessage.data, "UTF-8");
+                    final String result = new String((byte[]) aMessage.data, "UTF-8");
                     RequestModel<String> receiveObj = com.alibaba.fastjson.JSONObject.parseObject(result, new TypeReference<RequestModel<String>>() {
                     }.getType());
                     Log.v("msg","Received raw: "+result);
                     Log.v("msg","Received a message: " + (receiveObj==null?"":receiveObj.params));
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getBaseContext(), result, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();

@@ -47,9 +47,9 @@ public class TableAdapter extends ArrayAdapter<Element> {
         borrowBtn = (Button) convertView.findViewById(R.id.borrowbtn);
         addToCart = (Button) convertView.findViewById(R.id.addtocart);
 
-        location_table.setText(element.getElementsByAttributeValue("title", "显示馆藏地详细信息").text());
-        subscribing_table.setText(element.getElementsByClass("EXLLocationTableColumn1").text());
-        single_status_table.setText(element.getElementsByClass("EXLLocationTableColumn2").text());
+        location_table.setText(element.select("strong").text());
+        subscribing_table.setText(element.select("cite").text().substring(1,element.select("cite").text().length()-2));
+        single_status_table.setText(element.getElementsByClass("EXLResultStatusAvailable").text());
         return_data_table.setText(element.getElementsByClass("EXLLocationTableColumn3").text());
         borrowBtn.setOnClickListener(new View.OnClickListener() {
             @Override
