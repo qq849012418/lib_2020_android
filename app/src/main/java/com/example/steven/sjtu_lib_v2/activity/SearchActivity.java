@@ -21,11 +21,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.steven.sjtu_lib_v2.R;
 import com.example.steven.sjtu_lib_v2.adapter.TextTagsAdapter;
+import com.example.steven.sjtu_lib_v2.devicesdk.demo.LightExampleActivity;
 import com.example.steven.sjtu_lib_v2.identicons.Identicon;
 import com.lapism.searchview.adapter.SearchAdapter;
 import com.lapism.searchview.adapter.SearchItem;
@@ -69,7 +71,8 @@ public class SearchActivity extends AppCompatActivity
     SearchView searchView;
     @Bind(R.id.tag_cloud)
     TagCloudView tagCloud;
-
+    @Bind(R.id.DebugMode)
+    Button debugmode;
     Identicon identicon;
     TextView tvNaviTitle;
     TextView tvNaviSubTitle;
@@ -177,7 +180,15 @@ public class SearchActivity extends AppCompatActivity
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
-
+        debugmode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setClass(getApplicationContext(), LightExampleActivity.class);
+                //intent.putExtra("url",base_url +tv.getText().toString());
+                startActivity(intent);
+            }
+        });
 
 
     }

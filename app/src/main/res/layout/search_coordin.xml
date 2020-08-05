@@ -24,6 +24,16 @@
         app:darkColor="@color/tagDark"
         app:lightColor="@color/tagLight"
         app:radiusPercent="0.6"
-        app:scrollSpeed="3" />
+        app:scrollSpeed="3" >
+
+    </com.moxun.tagcloudlib.view.TagCloudView>
+
+    <Button
+        android:id="@+id/DebugMode"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="DebugMode" />
 
 </LinearLayout>

@@ -1,11 +1,16 @@
 package com.example.steven.sjtu_lib_v2.devicesdk.demo;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -39,11 +44,13 @@ import java.util.Map;
 public class LightExampleActivity extends BaseActivity {
 
     private final static int REPORT_MSG = 0x100;
-
+    SharedPreferences mActivitySp;
     TextView consoleTV;
     String consoleStr;
     private InternalHandler mHandler = new InternalHandler();
-
+    String defcode;
+    EditText bookid;
+    Button sendid;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,9 +59,22 @@ public class LightExampleActivity extends BaseActivity {
         setContentView(R.layout.activity_light_example);
         consoleTV = (TextView) findViewById(R.id.textview_console);
         setDownStreamListener();
-        showToast("已启动每5秒上报一次状态");
-        log("已启动每5秒上报一次状态");
-        mHandler.sendEmptyMessageDelayed(REPORT_MSG, 2 * 1000);
+        log("已启动上报");
+        mActivitySp = this.getPreferences( Context.MODE_PRIVATE );
+        mActivitySp.edit().commit();//only create file
+        bookid = (EditText)findViewById(R.id.bookid);
+        bookid.setText(mActivitySp.getString( "bookid", "I313.45/24-3 2019" ));
+        sendid = (Button)findViewById(R.id.sendid);
+        sendid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor editor = mActivitySp.edit();
+                editor.putString( "bookid", bookid.getText().toString());
+                editor.commit();
+                mHandler.sendEmptyMessageDelayed(REPORT_MSG, 2 * 1000);
+            }
+        });
+
     }
 
     /**
@@ -70,7 +90,7 @@ public class LightExampleActivity extends BaseActivity {
             String tasklist="";
             String name = "test";
             String path = "C300";
-            String code = "I313.45/24-3 2019";
+            String code = bookid.getText().toString();
             for(int i=0;i<2;i++){
                 tasklist+="{\"bookname\":\""+name+i+"\"," +
                         "\"path\":\""+path+"\"," +
@@ -210,7 +230,7 @@ public class LightExampleActivity extends BaseActivity {
             switch (what) {
                 case REPORT_MSG:
                     reportHelloWorld();
-                    //mHandler.sendEmptyMessageDelayed(REPORT_MSG, 5*1000);
+                    //mHandler.sendEmptyMessageDelayed(REPORT_MSG, 5*1000);//取消自动上报
                     break;
             }
 

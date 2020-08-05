@@ -32,7 +32,7 @@
         <activity android:name=".activity.RankActivity" />
         <activity android:name=".activity.LoginActivity" />
         <activity android:name=".activity.MyHistoryActivity" />
-
+        <activity android:name=".devicesdk.demo.LightExampleActivity" />
         <service
             android:name=".updateService"
             android:enabled="true"

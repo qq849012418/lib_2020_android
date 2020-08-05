@@ -4,6 +4,27 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/bookid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:ems="10"
+            android:hint="bookid"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/sendid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="发送索书号" />
+    </LinearLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
