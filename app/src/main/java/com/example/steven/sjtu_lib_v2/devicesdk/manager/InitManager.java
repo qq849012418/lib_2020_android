@@ -63,6 +63,7 @@ public class InitManager {
         params.connectConfig = new IoTApiClientConfig();
         // 如果明确需要切换域名，可以设置 connectConfig 中 domain 的值；
         params.deviceInfo = myDeviceInfo;
+
         HubApiRequest hubApiRequest = new HubApiRequest();
         hubApiRequest.path = "/auth/register/device";
         // 调用动态注册接口

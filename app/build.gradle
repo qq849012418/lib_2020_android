@@ -89,7 +89,7 @@ dependencies {
     implementation 'androidx.annotation:annotation:+'
     implementation 'com.google.code.gson:gson:2.8.1'
 
-    implementation 'com.rmtheis:tess-two:9.0.0'
+    implementation 'com.rmtheis:tess-two:7.0.0'
 
     implementation 'com.google.zxing:core:3.3.0'
 }

@@ -242,10 +242,10 @@ public class SingleDetailActivity extends AppCompatActivity {
                         if (!EXLLocationTableColumn1_eles.isEmpty()) {
                             for (Element i : EXLLocationTableColumn1_eles) {
                                 table_data.add(i.parent());
-                                System.out.println("kkk"+i.toString()+"--kkk");
+                                //System.out.println("kkk"+i.toString()+"--kkk");
                             }
                             adapter.notifyDataSetChanged();
-                        } else {
+                        } else {//废弃，图书馆隐藏了<a>标签的显示
                             List<String> link_list = new ArrayList<String>();
                             Elements link_elm = doc.getElementsByClass("EXLLocationListContainer");
                             for (Element i : link_elm) {

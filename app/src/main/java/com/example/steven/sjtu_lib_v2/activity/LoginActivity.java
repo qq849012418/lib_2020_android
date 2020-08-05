@@ -3,8 +3,12 @@ package com.example.steven.sjtu_lib_v2.activity;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +26,11 @@ import com.zhy.http.okhttp.callback.StringCallback;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import okhttp3.Call;
 
 /**
@@ -31,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
-
+    String realUrl;
     VarifyLog varifyLog;
 
     /**
@@ -56,6 +65,24 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        WebView webView = new WebView(this);
+        webView.loadUrl("http://ourex.lib.sjtu.edu.cn:8991/pds?func=load-login&calling_system=primo&institute=SJT&lang=chi&isMobile=false&url=http://ourex.lib.sjtu.edu.cn:80/primo_library/libweb/action/login.do?targetURL=http%3a%2f%2fourex.lib.sjtu.edu.cn%3a80%2fprimo_library%2flibweb%2faction%2f%3fvid%3dchinese%26amp%3bdscnt%3d0%26amp%3bdstmp%3d1596567363435%26amp%3binitializeIndex%3dtrue");
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.setWebViewClient(new WebViewClient(){
+            //页面加载开始
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+            }
+            //页面加载完成
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                realUrl = url;
+                System.out.println("realUrl"+realUrl);
+//这个realUrl即为重定向之后的地址
+            }
+        });
         varifyLog=new VarifyLog();
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -89,8 +116,9 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
+
             OkHttpUtils.get()
-                .url("http://electsys.sjtu.edu.cn/edu/login.aspx")//原为http
+                .url(realUrl)//原为http://electsys.sjtu.edu.cn/edu/login.aspx
                     .addHeader("Content-Type","application/x-www-form-urlencoded;charset=UTF-8" )
                     .build()
                 .execute(new StringCallback() {
@@ -106,11 +134,13 @@ public class LoginActivity extends AppCompatActivity {
                         System.out.println("length: "+response.length());
 
                         final Document doc = Jsoup.parse(response);
+                        //System.out.println("kkk "+doc.toString()+"kkk");
                         final String sid = doc.getElementsByAttributeValueMatching("name", "sid").first().attr("value").toString();
                         final String returl = doc.getElementsByAttributeValueMatching("name", "returl").first().attr("value").toString();
                         final String se = doc.getElementsByAttributeValueMatching("name", "se").first().attr("value").toString();
-                            //final String v = doc.getElementsByAttributeValueMatching("name", "v").first().attr("value").toString();
-
+                        System.out.println("sid="+sid);
+                        System.out.println("returl="+returl);
+                        System.out.println("se="+se);
                             OkHttpUtils.get()
                                     .url("https://jaccount.sjtu.edu.cn/jaccount/captcha")
                                     .addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.65 Safari/537.36")
@@ -128,7 +158,7 @@ public class LoginActivity extends AppCompatActivity {
                                         public void onResponse(Bitmap response) {
                                             System.out.print("get image yet ");
                                             final TessBaseAPI baseAPI = new TessBaseAPI();
-                                            baseAPI.init("/sdcard/", "eng");
+                                            baseAPI.init(Environment.getExternalStorageDirectory().toString(), "eng");
                                             baseAPI.setImage(response);
                                             String captcha_text = baseAPI.getUTF8Text().toString();
                                             System.out.println(captcha_text);

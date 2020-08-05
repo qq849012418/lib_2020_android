@@ -3,6 +3,8 @@ package com.example.steven.sjtu_lib_v2.asynctask;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Environment;
+import android.util.Log;
 
 import com.example.steven.sjtu_lib_v2.RefreshBorrowInterface;
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -33,19 +35,21 @@ public class MyBorrowAsy extends AsyncTask<Void,Void,ArrayList<Element>> {
     private String name;
     private String pass;
     private Context context;
-
-    public MyBorrowAsy(RefreshBorrowInterface listener, String name, String pass, Context context){
+    private String realUrl;
+    public MyBorrowAsy(RefreshBorrowInterface listener, String name, String pass, Context context, String realUrl){
         this.listener=listener;
         this.name=name;
         this.pass=pass;
         this.context=context;
+        this.realUrl=realUrl;
     }
 
     @Override
     protected ArrayList<Element> doInBackground(Void... params) {
         final ArrayList<Element> result=new ArrayList<Element>();
+
         OkHttpUtils.get()
-                .url("http://opac.lib.sjtu.edu.cn:8118/sjt-local/opac-login.jsp")
+                .url(realUrl)
                 .build()
                 .execute(new StringCallback() {
                     @Override
@@ -57,6 +61,7 @@ public class MyBorrowAsy extends AsyncTask<Void,Void,ArrayList<Element>> {
                     public void onResponse(String response) {
                         System.out.println(response.length());
                         final Document doc = Jsoup.parse(response);
+                        //System.out.println("kkk"+doc.toString()+"kkk");
                         final String sid = doc.getElementsByAttributeValueMatching("name", "sid").first().attr("value").toString();
                         final String returl = doc.getElementsByAttributeValueMatching("name", "returl").first().attr("value").toString();
                         final String se = doc.getElementsByAttributeValueMatching("name", "se").first().attr("value").toString();
@@ -74,13 +79,13 @@ public class MyBorrowAsy extends AsyncTask<Void,Void,ArrayList<Element>> {
                                     @Override
                                     public void onResponse(Bitmap response) {
                                         final TessBaseAPI baseAPI = new TessBaseAPI();
-                                        baseAPI.init("/sdcard/", "eng");
+                                        baseAPI.init(Environment.getExternalStorageDirectory().toString(), "eng");
                                         baseAPI.setImage(response);
                                         String captcha_text = baseAPI.getUTF8Text().toString();
                                         System.out.println(captcha_text);
 
                                         OkHttpUtils.post()
-                                                .url("https://jaccount.sjtu.edu.cn/jaccount/ulogin")
+                                                .url("https://jaccount.sjtu.edu.cn/jaccount/jalogin")
                                                 .addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.65 Safari/537.36")
                                                 .addParams("sid", sid)
                                                 .addParams("returl", returl)
@@ -100,8 +105,9 @@ public class MyBorrowAsy extends AsyncTask<Void,Void,ArrayList<Element>> {
 
                                                     @Override
                                                     public void onResponse(String response) {
-                                                        System.out.println("hello");
+
                                                         int index = response.indexOf("loginfail");
+                                                        System.out.println("hello"+index);
                                                         if (index == -1) {
                                                             //                                没有找到loginfail，所以可以继续访问下去
                                                             final String line = "\'https.*\'";
@@ -110,13 +116,14 @@ public class MyBorrowAsy extends AsyncTask<Void,Void,ArrayList<Element>> {
                                                             if (m.find()) {
                                                                 String next_url = m.group(0);
                                                                 next_url = next_url.substring(1, next_url.length() - 1);
+                                                                System.out.println(next_url);
                                                                 OkHttpUtils.get()
                                                                         .url(next_url)
                                                                         .build()
                                                                         .execute(new StringCallback() {
                                                                             @Override
                                                                             public void onError(Call call, Exception e) {
-
+                                                                                e.printStackTrace();
                                                                             }
 
                                                                             @Override
@@ -133,6 +140,7 @@ public class MyBorrowAsy extends AsyncTask<Void,Void,ArrayList<Element>> {
                                                                                             .execute(new StringCallback() {
                                                                                                 @Override
                                                                                                 public void onError(Call call, Exception e) {
+                                                                                                    e.printStackTrace();
 
                                                                                                 }
 
@@ -149,7 +157,7 @@ public class MyBorrowAsy extends AsyncTask<Void,Void,ArrayList<Element>> {
                                                                                                                 .execute(new StringCallback() {
                                                                                                                     @Override
                                                                                                                     public void onError(Call call, Exception e) {
-
+                                                                                                                        e.printStackTrace();
                                                                                                                     }
 
                                                                                                                     @Override
@@ -188,7 +196,7 @@ public class MyBorrowAsy extends AsyncTask<Void,Void,ArrayList<Element>> {
                                                                         });
 
                                                             } else {
-                                                                System.out.print("not found");
+                                                                System.out.println("not found");
                                                             }
                                                         } else {
                                                             System.out.print("you should retry");

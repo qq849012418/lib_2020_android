@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
@@ -18,6 +19,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,7 +73,7 @@ public class SearchActivity extends AppCompatActivity
     Identicon identicon;
     TextView tvNaviTitle;
     TextView tvNaviSubTitle;
-
+    public static String realUrl;
     private List<SearchItem> mSuggestionList;
     private int mTheme = SearchCodes.THEME_LIGHT;
     SQLiteDatabase db;
@@ -83,6 +86,9 @@ public class SearchActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_drawer);
+
+
+
         ButterKnife.bind(this);
         Toolbar toolbar1 = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar1);
@@ -96,6 +102,8 @@ public class SearchActivity extends AppCompatActivity
         if (!file.exists()) {
             push_tranedeng_tosdcard();
         }
+
+
 
         navigationView.setNavigationItemSelectedListener(this);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -170,11 +178,35 @@ public class SearchActivity extends AppCompatActivity
             StrictMode.setThreadPolicy(policy);
         }
 
+
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        //显示个人借阅的准备工作
+        WebView webView = new WebView(this);
+        webView.loadUrl("http://ourex.lib.sjtu.edu.cn:8991/pds?func=load-login&calling_system=primo&institute=SJT&lang=chi&url=http://ourex.lib.sjtu.edu.cn:80/primo_library/libweb/action/login.do?targetURL=http://ourex.lib.sjtu.edu.cn/primo_library/libweb/action/search.do");
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.setWebViewClient(new WebViewClient(){
+            //页面加载开始
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                System.out.println("onpagestart"+url);
+            }
+            //页面加载完成
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                realUrl = url;
+                System.out.println("realUrl"+realUrl);
+
+//这个realUrl即为重定向之后的地址
+            }
+        });
+
         try {
             DB snappydb = DBFactory.open(getApplication(), "notvital");
             String jaccountName = snappydb.get("name");

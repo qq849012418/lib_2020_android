@@ -1,7 +1,11 @@
 package com.example.steven.sjtu_lib_v2.activity;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -16,6 +20,10 @@ import com.snappydb.SnappydbException;
 
 import org.jsoup.nodes.Element;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -29,6 +37,7 @@ public class MyBorrowActivity extends AppCompatActivity implements RefreshBorrow
     @Bind(R.id.listView2)ListView listView;
     MyBorrowAdapter myBorrowAdapter;
     private DbHelper DB;
+    String realUrl="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +52,8 @@ public class MyBorrowActivity extends AppCompatActivity implements RefreshBorrow
             if (name.length() == 0 || pass.length() == 0) {
                 Toast.makeText(getApplicationContext(),"尚未登陆",Toast.LENGTH_SHORT).show();
             }else {
-                ArrayList<Element> elementArrayList=new MyBorrowAsy(this,name,pass,getApplicationContext()).execute().get();
+
+                ArrayList<Element> elementArrayList=new MyBorrowAsy(this,name,pass,getApplicationContext(),SearchActivity.realUrl).execute().get();
 //                ArrayList<Element> elementArrayList=new Login(this,name,pass,getApplicationContext()).execute().get();
                 DB.insert(elementArrayList);
 //>>>>>>> Stashed changes
